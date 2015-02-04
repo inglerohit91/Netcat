@@ -1,0 +1,145 @@
+Lab1: Socket Programming: netcat_part (CSCIP-538)
+=================================================
+	Name			User name
+	---- 			--------
+1)	Rahul Sinha		rahsinha
+2)	Rohit Ingle		rpingle
+
+Code Description
+===========================================================================
+We have used C for implementing this netcat_part application software.
+Since it is mentioned in lab handout that one netcat_part.c file is
+desired, so we have kept the file hierarchy very simple with a single
+C file named "netcal_part.c" and a Makefile.
+
+We have used the skeleton code available on oncourse and implemented our
+code around it. The c file "netcat_part.c" can function both as a server
+and as a client depending on the command line arguments passed to it.
+
+Our c file has the following functions :
+
+1) main() 	 	:  This is the main function.
+
+2) parse_args()  	:  This function parses the command line arguments 
+			passed to the main function. The main function calls  
+		    	this function at the start of its routine. This function
+		    	determines whether the current instance of the program
+		    	should act as a server or client and also initializes
+		    	the members of the structure variable which  we use to
+         	    	store the values passed from command line and other
+		    	necessary information.
+
+3) send_message()       : This is the function called by main when the program 
+			instance is that of a client in message mode. It sends
+	                a string message passed as command line argument to 
+                   	another instance of a program acting as a server over a 
+                    	socket connection between them.It sends a digest along
+			with the message (computed using a shared key) for 
+			integrity check at the receiving end.
+
+4) send_file()     	: This function is called by main when the user wants to 
+		    	send a file(full or partial) over a socket connection 
+		    	to a netcat_part server.It sends a digest along with the
+			file content for integrity check at the receiving end. 
+
+5) listen_message() 	: This is the function which acts a server when the program
+		 	 instance acts as a netcat_part server. It handles all the
+			 incoming socket connections coming from different netcat_part
+			 clients and reads the data sent by them. It calculates a 
+			 digest of the message/file received with a shared key and
+			 checks for data integrity by comparing it with the digest 
+			 received from the client along with the message/file. It
+			 then writes the content to a file.
+
+Tasks Accomplished
+====================================================================================
+On server Side
+==============
+1) Implementation of netcat_part server which can receive a message/or a file 
+   (full or partial) from a netcat_part client over a socket connection. 
+2) Server can mention the IP address and the port number on which to run when the
+   server is spawned from the command line argument.(Default: localhost, 6767)
+3) Server can work in verbose mode too where it displays information related to 
+   the activities that happen at that instance of time on the standard output.
+4) Server writes the contents received on the socket to a file whose name is passed
+   as a command line argument while server spawning.
+5) Server process is a continuous process. It services clients one after the other
+   continuously without exiting.
+6) Server has ability to check for message integrity using HMAC function.
+
+On client Side
+==============
+1) Implementation of netcat_part client which can communicate with a netcat_part server.
+2) It can send a message string in message mode to the client which is passed from the 
+   command line while spawning the client.
+3) It can send a full or partial file to the server.
+4) Client can mention IP address and port number of server while connecting to it.
+   By default it connects to localhost on port 6767.
+5) While sending file, client can mention file offsets and number of bytes of the file
+   to be sent to the server.
+6) Client can run in verbose mode too giving out valuable information on the standard
+   output.
+7) Client has the ability to calculate a message digest using HMAC function and send it
+   along with the message/file to the server for  it to check the integrity of the
+   received content.
+8) Please make sure the size of file to be sent is less than 30720 Bytes. Bytes after 
+   that will not be written to output file at the server side.
+
+Code Compilation and Execution
+======================================================================================
+Please copy the 3 files in the tarball : netcat_part.c, Makefile and this README file
+to a directory on linux machine.
+
+Execute the Makefile. Type 'make' and hit enter.
+
+The Makefile has been written to compile netcat_part.c and give an output executable 
+named :  netcat_part 
+
+The makefile uses the following command to compile the code :
+	gcc -g -Wall -lssl netcat_part.c -o netcat_part
+
+We have tested the code on silo.soic.indiana.edu and it works fine.
+
+To run the executable type ./netcat_part along with the necessary arguments as listed:
+
+./netcat_part [OPTIONS]  dest_ip [file] 
+          -h            Print this help screen
+          -v            Verbose output
+          -m "MSG"      Send the message specified on the command line. 
+                        Warning: if you specify this option, you do not specify a file. 
+          -p port       Set the port to connect on (dflt: 6767)
+          -n bytes      Number of bytes to send, defaults whole file
+          -o offset     Offset into file to start sending
+          -l            Listen on port instead of connecting and write output to file
+                        and dest_ip refers to which ip to bind to (dflt: localhost)
+
+
+Note : While executing any command please make sure to provide IP address first and then 
+filename in the command line if the case arises of providing both. If the sequence is 
+not maintained and filename comes ahead of IP, the program processes the filename as an
+IP address and may exit with errors.
+	Also please avoid using exclamation'!' marks in any messages or file to be send.
+The result may not be predictable as sometimes a linux bash process tries to initiate
+after inputs like ! are found. If ! is to be sent, kindly precede the ! mark with a \.
+
+						Interpreting Output
+========================================================================================
+On Server Side
+==============
+All data received by the server is written to a file whose name is passed as command line
+while spawning the server. Please open that file and check the contents to be consistent
+with the content on sending side.
+
+For additional information on standard output, please spawn server with -v option(verbose).
+This displays information like Server Ip Address, Port number, Bytes Received, Received 
+and calculated digest,etc.
+
+On Client Side
+==============
+For additional information on the client side standard output,please spawn client with -v
+option(verbose). This displays information like Message sent, Message Length, Bytes sent,
+Message+Digest length, Digest,File Offset, Bytes to send, port number,server IP,etc. 
+
+==========================================================================================
+					EOF
+==========================================================================================
